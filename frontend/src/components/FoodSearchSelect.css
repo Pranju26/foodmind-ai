@@ -1,0 +1,98 @@
+.food-search-wrapper {
+  position: relative;
+  flex: 2;
+}
+
+.food-search-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #D8DCD3;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+}
+
+.food-search-input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-color: var(--color-accent);
+}
+
+.food-search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  padding: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.food-search-status {
+  padding: 10px;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.food-search-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.food-search-results li {
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.food-search-results li:hover {
+  background: var(--color-bg);
+}
+
+.food-search-ai-tag {
+  font-size: 0.7rem;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.food-search-empty {
+  padding: 12px;
+  text-align: center;
+}
+
+.food-search-empty p {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0 0 10px 0;
+}
+
+.food-search-empty button {
+  padding: 8px 14px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.food-search-empty button:disabled {
+  opacity: 0.6;
+}
+
+.food-search-error {
+  padding: 8px;
+  color: var(--color-error);
+  font-size: 0.82rem;
+}

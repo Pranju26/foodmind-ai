@@ -1,0 +1,126 @@
+.auth-page {
+  display: flex;
+  min-height: 100vh;
+  background: #FFFFFF;
+}
+
+.auth-brand-panel {
+  flex: 1;
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px;
+}
+
+.auth-brand-panel h1 {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.auth-brand-panel p {
+  font-size: 1.1rem;
+  opacity: 0.85;
+  max-width: 320px;
+}
+
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: #FFFFFF;
+}
+
+.auth-form-box {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.auth-form-box h2 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
+
+.auth-subtitle {
+  color: #666;
+  margin-bottom: 28px;
+}
+
+.auth-form-box form {
+  text-align: left;
+}
+
+.auth-form-box label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  margin-top: 16px;
+}
+
+.auth-form-box input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #D8DCD3;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: var(--font-body);
+  background: var(--color-surface);
+}
+
+.auth-form-box input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-color: var(--color-accent);
+}
+
+.auth-form-box button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 13px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-form-box button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.auth-error {
+  color: var(--color-error);
+  font-size: 0.9rem;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.auth-switch {
+  margin-top: 24px;
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .auth-page {
+    flex-direction: column;
+  }
+  .auth-brand-panel {
+    padding: 40px;
+    flex: none;
+  }
+}

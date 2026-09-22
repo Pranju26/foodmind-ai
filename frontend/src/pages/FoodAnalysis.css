@@ -1,0 +1,131 @@
+.analysis-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1100px;
+}
+
+.analysis-result-panel {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.analysis-empty {
+  color: #888;
+  text-align: center;
+}
+
+.analysis-empty-sub {
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.analysis-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.analysis-skeleton-line,
+.analysis-skeleton-block {
+  background: var(--color-bg);
+  border-radius: 6px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.analysis-skeleton-line {
+  height: 14px;
+}
+
+.analysis-skeleton-block {
+  height: 100px;
+  width: 100%;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.analysis-error {
+  color: var(--color-error);
+}
+
+.analysis-error-detail {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.analysis-result-label {
+  font-size: 0.8rem;
+  color: #999;
+  margin: 0 0 4px 0;
+}
+
+.analysis-result h2 {
+  font-family: var(--font-display);
+  margin: 0 0 12px 0;
+}
+
+.analysis-matched-tag {
+  display: inline-block;
+  background: #E8F3EA;
+  color: var(--color-primary);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  margin-bottom: 16px;
+}
+
+.analysis-unmatched-tag {
+  display: inline-block;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  margin-bottom: 10px;
+}
+
+.analysis-nutrition-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.analysis-nutrition-item {
+  display: flex;
+  justify-content: space-between;
+  background: var(--color-bg);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.analysis-note {
+  font-size: 0.82rem;
+  color: #888;
+}
+
+@media (max-width: 900px) {
+  .analysis-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analysis-log-btn {
+  margin-top: 8px;
+  padding: 10px 18px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.88rem;
+}

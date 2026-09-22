@@ -1,0 +1,88 @@
+.add-meal-form {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.add-meal-row {
+  margin-bottom: 16px;
+}
+
+.add-meal-row label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.add-meal-row select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #D8DCD3;
+  font-size: 0.9rem;
+}
+
+.add-meal-item-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.add-meal-item-row select {
+  flex: 2;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #D8DCD3;
+}
+
+.add-meal-item-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #D8DCD3;
+}
+
+.add-meal-remove {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--color-error);
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.add-meal-add-row {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 6px 0;
+  margin-bottom: 14px;
+}
+
+.add-meal-message {
+  color: var(--color-primary);
+  font-size: 0.85rem;
+}
+
+.add-meal-error {
+  color: var(--color-error);
+  font-size: 0.85rem;
+}
+
+.add-meal-submit {
+  padding: 12px 24px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-meal-submit:disabled {
+  opacity: 0.6;
+}
