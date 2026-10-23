@@ -145,10 +145,18 @@ def show_image_analysis():
         st.warning("""
         ⚠️ **AI Recognition Not Available**
         
-        To enable AI-powered food recognition, configure your Gemini API key:
-        1. Create a `.env` file in the project directory
-        2. Add: `GEMINI_API_KEY=your_actual_key`
-        3. Get your key from: https://makersuite.google.com/app/apikey
+        To enable AI-powered food recognition with Gemini Free API:
+        1. Visit: https://aistudio.google.com/app/apikey
+        2. Sign in with Google account
+        3. Click "Create API Key" (free tier)
+        4. Copy the key (starts with AIzaSy)
+        5. Add to `.env` file: `GEMINI_API_KEY=AIzaSy...`
+        6. Restart the app
+        
+        **Free tier includes:**
+        - gemini-1.5-flash (fast, optimized for images)
+        - 15 requests per minute
+        - No credit card required
         
         You can still upload and process images manually.
         """)
@@ -223,32 +231,68 @@ def analyze_image_with_ai(image_file):
         genai.configure(api_key=api_key)
         
         with st.spinner("🤖 Analyzing image with AI..."):
-            # Use Gemini vision model
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # Use Gemini 1.5 Flash - free tier vision model
+            try:
+                model = genai.GenerativeModel('gemini-1.5-flash')
+            except Exception as model_error:
+                st.error(f"Failed to initialize model: {str(model_error)}")
+                return
             
             # Reset file pointer and read image
             image_file.seek(0)
             image_data = image_file.read()
             
-            # Create proper image part
+            # Create proper image part for free API
             from PIL import Image
             import io
             image = Image.open(io.BytesIO(image_data))
             
-            prompt = """
-            Analyze this food image and provide:
-            1. Identify all visible food items
-            2. Estimate approximate serving sizes
-            3. Estimate nutritional values (calories, protein, carbs, fat) for each item
+            # Optimize prompt for free tier API
+            prompt = """Analyze this food image and provide:
+
+1. **Food Items Identified:**
+   List all visible food items
+
+2. **Estimated Serving Sizes:**
+   Approximate portion size for each item
+
+3. **Nutritional Estimates per item:**
+   - Calories (kcal)
+   - Protein (g)
+   - Carbohydrates (g)
+   - Fat (g)
+
+4. **Total Estimated Nutrition:**
+   Sum of all items
+
+Format as a clear, structured response."""
             
-            Format your response clearly with each food item and its estimated nutrition.
-            """
-            
-            response = model.generate_content([prompt, image])
-            
-            st.success("✅ AI Analysis Complete!")
-            st.markdown("### AI Analysis Results:")
-            st.write(response.text)
+            # Generate content with proper error handling for free API
+            try:
+                response = model.generate_content([prompt, image])
+                
+                # Check if response has content
+                if not response or not hasattr(response, 'text'):
+                    st.warning("⚠️ No response generated. Please try again.")
+                    return
+                
+                if not response.text:
+                    st.warning("⚠️ Empty response. The image might not be clear enough.")
+                    return
+                
+                st.success("✅ AI Analysis Complete!")
+                st.markdown("### 🔍 AI Analysis Results:")
+                st.write(response.text)
+                
+            except Exception as gen_error:
+                error_str = str(gen_error)
+                if "quota" in error_str.lower():
+                    st.error("❌ API quota exceeded. Please wait and try again later.")
+                elif "404" in error_str:
+                    st.error("❌ Model not found. Please check your API key has access to gemini-1.5-flash.")
+                else:
+                    st.error(f"❌ Generation failed: {error_str[:200]}")
+                return
             
             st.info("""
             **Note:** These are AI-generated estimates. Actual nutritional values may vary based on:

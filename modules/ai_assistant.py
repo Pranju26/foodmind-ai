@@ -252,23 +252,30 @@ Current key format is not compatible with Gemini API."""
         except Exception as config_error:
             return f"❌ API configuration failed: {str(config_error)[:150]}"
         
-        # Find available model
-        model_to_use = 'gemini-pro'  # Default fallback
+        # Use Gemini 1.5 Flash - best for free tier
+        # Free tier models: gemini-1.5-flash, gemini-1.5-pro (limited), gemini-pro
+        model_to_use = 'gemini-1.5-flash'  # Optimized for free API
         
         try:
-            # List available models
+            # Try to verify model availability
             available_models = list(genai.list_models())
             
+            # Check if preferred model is available
+            model_found = False
             if available_models:
-                # Find a suitable model with generateContent support
                 for m in available_models:
                     if 'generateContent' in [method.name for method in m.supported_generation_methods]:
-                        # Prefer newer models
-                        if 'gemini-1.5' in m.name or 'gemini-pro' in m.name:
-                            model_to_use = m.name.replace('models/', '')
+                        model_name = m.name.replace('models/', '')
+                        # Prefer flash model for free tier, then pro
+                        if 'gemini-1.5-flash' in model_name:
+                            model_to_use = model_name
+                            model_found = True
                             break
+                        elif 'gemini-1.5-pro' in model_name and not model_found:
+                            model_to_use = model_name
+                            model_found = True
         except Exception as list_error:
-            # Log error but continue with default model
+            # Continue with default model if listing fails
             error_str = str(list_error)
             if "API_KEY_INVALID" in error_str:
                 return """❌ API Key Authentication Failed
@@ -310,25 +317,23 @@ You've reached your free tier limit.
         # Get user context
         context = get_user_context(db)
         
-        # Build prompt with context
-        system_prompt = f"""You are FoodMind AI, a friendly and knowledgeable nutrition assistant.
+        # Build optimized prompt for free tier API
+        system_prompt = f"""You are FoodMind AI, a friendly nutrition assistant.
 
-User Context:
-{context}
+{context if context and context != "Unable to retrieve user context." else "User Profile: New user"}
+
+Your task: Answer this nutrition question clearly and concisely.
+
+Question: {user_message}
 
 Guidelines:
-- Provide accurate, evidence-based nutrition information
-- Be encouraging and supportive
-- Tailor advice to the user's profile and goals when available
-- For meal suggestions, consider their dietary preferences
-- Remind users to consult healthcare professionals for medical advice
-- Keep responses conversational and easy to understand
-- Use emojis appropriately to make responses engaging
-- Keep responses concise but informative (2-4 paragraphs max)
+- Keep response under 200 words
+- Be accurate and evidence-based
+- Use bullet points for lists
+- Include emojis for engagement (✅, 🥗, 💪, etc.)
+- Remind user to consult healthcare professionals for medical advice if needed
 
-User question: {user_message}
-
-Please provide a helpful, friendly response:"""
+Response:"""
         
         # Generate response
         try:
