@@ -53,3 +53,8 @@ exports/*.csv
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Documentation with sensitive info
+SIMPLE_FIX_GUIDE.txt
+FIX_API_KEY_NOW.md
+GEMINI_API_DIAGNOSTIC.md

@@ -40,7 +40,7 @@ def validate_image(uploaded_file, max_size_mb=5):
         return False, f"Invalid image file: {str(e)}"
 
 
-def process_food_image(uploaded_file, max_width=800, max_height=800):
+def process_food_image(uploaded_file, max_width=500, max_height=500):
     """
     Process and resize uploaded food image
     

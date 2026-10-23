@@ -176,8 +176,10 @@ def show_image_analysis():
             st.error("Failed to process image")
             return
         
-        # Display processed image
-        st.image(processed_image, caption="Uploaded Food Image", use_container_width=True)
+        # Display processed image with reduced size
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.image(processed_image, caption="Uploaded Food Image", width=400)
         
         # Get image info
         img_info = img_proc.get_image_info(processed_image)
