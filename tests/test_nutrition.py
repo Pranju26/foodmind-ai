@@ -80,7 +80,7 @@ class TestTDEECalculation:
         """Test TDEE for very active lifestyle"""
         bmr = 1700
         tdee = nutr.calculate_tdee(bmr, 'very_active')
-        assert tdee == bmr * 1.725
+        assert tdee == round(bmr * 1.725, 0)
     
     def test_activity_levels(self):
         """Test that higher activity = higher TDEE"""

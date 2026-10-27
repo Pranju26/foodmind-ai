@@ -82,25 +82,31 @@ def show_ai_assistant(db):
             st.rerun()
 
 
+def get_gemini_api_key():
+    """Retrieve Gemini API key from environment variable or Streamlit secrets"""
+    load_dotenv(dotenv_path=ENV_PATH, override=True)
+    key = os.getenv('GEMINI_API_KEY')
+    if not key or key == 'your_gemini_api_key_here':
+        try:
+            if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets:
+                key = st.secrets['GEMINI_API_KEY']
+        except Exception:
+            pass
+    return key.strip().strip("'\"") if key else None
+
+
 def check_gemini_api():
     """Check if Gemini API is configured and return status with error message"""
     try:
-        # Load .env from project directory explicitly
-        load_dotenv(dotenv_path=ENV_PATH, override=True)
-        api_key = os.getenv('GEMINI_API_KEY')
+        api_key = get_gemini_api_key()
         
         # Check if key exists
-        if not api_key or api_key == 'your_gemini_api_key_here':
-            return False, "No API key found in .env file"
+        if not api_key:
+            return False, "No API key found in .env file or Streamlit secrets"
         
-        # Check key length
-        if len(api_key) < 30:
-            return False, f"API key too short ({len(api_key)} characters)"
-        
-        # Check key format
-        if not api_key.startswith('AIzaSy'):
-            key_start = api_key[:7] if len(api_key) >= 7 else api_key
-            return False, f"Invalid API key format. Key starts with '{key_start}...' but should start with 'AIzaSy'"
+        api_key = api_key.strip().strip("'\"")
+        if len(api_key) < 15:
+            return False, "API key is too short to be valid"
         
         # Test if google.generativeai is available
         try:
@@ -170,12 +176,18 @@ def show_api_setup_instructions(error_msg=None):
     
     ### ⚠️ Common Issues:
     
-    **❌ Wrong Key Format (Your Current Issue)**
-    - Your key starts with `AQ.Ab...` but should start with `AIzaSy...`
-    - This is NOT a valid Gemini API key format
-    - You need to create a NEW key from Google AI Studio
+    **❌ Wrong Key Format (OAuth Token Detected)**
+    - Your key starts with `AQ.` which is an OAuth 2.0 token
+    - This is NOT compatible with Gemini API
+    - Gemini API keys start with `AIzaSy`
+    - You need to get a completely different type of key
     
-    **✅ Valid Key Format:**
+    **Where your current key came from:**
+    - Likely from Google Cloud Console OAuth credentials
+    - Or from a different Google API service
+    - These keys don't work with Gemini
+    
+    **✅ Valid Gemini Key Format:**
     - Starts with: `AIzaSy`
     - Length: 39 characters
     - Example: `AIzaSyDaB1CdE2FgH3IjK4LmN5OpQ6RsT`
@@ -225,26 +237,14 @@ def get_ai_response(user_message, db):
         import google.generativeai as genai
         from database import db as db_module
         
-        # Load .env from project directory explicitly
-        load_dotenv(dotenv_path=ENV_PATH, override=True)
-        api_key = os.getenv('GEMINI_API_KEY')
+        api_key = get_gemini_api_key()
         
         # Validate API key
-        if not api_key or api_key == 'your_gemini_api_key_here':
-            return "❌ API key not configured. Please set up your Gemini API key in the .env file."
+        if not api_key:
+            return "❌ API key not configured. Please set up your Gemini API key in the .env file or Streamlit Secrets."
         
-        if not api_key.startswith('AIzaSy'):
-            return f"""❌ Invalid API key format detected.
-
-**Issue:** Your API key starts with '{api_key[:7]}...' but should start with 'AIzaSy'
-
-**Solution:**
-1. Visit: https://aistudio.google.com/app/apikey
-2. Create a NEW API key
-3. Update your .env file with the new key
-4. Restart the app
-
-Current key format is not compatible with Gemini API."""
+        if len(api_key) < 15:
+            return "❌ API key is too short. Please check your configuration."
         
         # Configure Gemini
         try:
@@ -252,28 +252,33 @@ Current key format is not compatible with Gemini API."""
         except Exception as config_error:
             return f"❌ API configuration failed: {str(config_error)[:150]}"
         
-        # Use Gemini 1.5 Flash - best for free tier
-        # Free tier models: gemini-1.5-flash, gemini-1.5-pro (limited), gemini-pro
-        model_to_use = 'gemini-1.5-flash'  # Optimized for free API
+        # Preferred models ordered by cost/speed/modern availability
+        preferred_models = [
+            'gemini-3.5-flash-lite',
+            'gemini-3.8-flash',
+            'gemini-flash-latest',
+            'gemini-3.1-flash-lite',
+            'gemini-2.5-flash-lite',
+            'gemini-1.5-flash',
+            'gemini-pro'
+        ]
+        model_to_use = 'gemini-3.5-flash-lite'
         
         try:
-            # Try to verify model availability
             available_models = list(genai.list_models())
+            supported_names = [
+                m.name.replace('models/', '') 
+                for m in available_models 
+                if 'generateContent' in [method.name for method in m.supported_generation_methods]
+            ]
             
-            # Check if preferred model is available
-            model_found = False
-            if available_models:
-                for m in available_models:
-                    if 'generateContent' in [method.name for method in m.supported_generation_methods]:
-                        model_name = m.name.replace('models/', '')
-                        # Prefer flash model for free tier, then pro
-                        if 'gemini-1.5-flash' in model_name:
-                            model_to_use = model_name
-                            model_found = True
-                            break
-                        elif 'gemini-1.5-pro' in model_name and not model_found:
-                            model_to_use = model_name
-                            model_found = True
+            for pref in preferred_models:
+                if pref in supported_names:
+                    model_to_use = pref
+                    break
+            else:
+                if supported_names:
+                    model_to_use = supported_names[0]
         except Exception as list_error:
             # Continue with default model if listing fails
             error_str = str(list_error)
